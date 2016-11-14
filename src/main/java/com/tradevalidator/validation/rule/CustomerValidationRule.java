@@ -11,7 +11,7 @@ import java.util.Collection;
 import static com.tradevalidator.validation.Error.UNSUPPORTED_CUSTOMER;
 
 @Component
-public class CustomerValidationRule implements ValidationRule {
+public class CustomerValidationRule implements AllValidationRule {
 
 
     @Override

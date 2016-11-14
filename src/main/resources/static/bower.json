@@ -1,0 +1,28 @@
+{
+  "name": "Trade Validator",
+  "authors": [
+    "joe <j.andre.oliveira@gmail.com>"
+  ],
+  "description": "validator of trades",
+  "keywords": [
+    "validator",
+    "trade",
+    "trades"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies":{
+    "angular":"1.5.8",
+    "angular-resource":"1.5.8",
+    "angular-route":"1.5.8",
+    "bootstrap":"3.3.7",
+    "jquery":"3.1.0"
+  }
+}

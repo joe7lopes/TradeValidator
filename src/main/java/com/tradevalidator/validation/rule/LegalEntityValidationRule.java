@@ -11,7 +11,7 @@ import java.util.Collection;
 import static com.tradevalidator.validation.Error.UNSUPPORTED_LEGAL_ENTITY;
 
 @Component
-public class LegalEntityValidationRule implements ValidationRule {
+public class LegalEntityValidationRule implements AllValidationRule {
     @Override
     public Collection<Error> validate(Trade trade) {
         Collection<Error> errors = new ArrayList<>();

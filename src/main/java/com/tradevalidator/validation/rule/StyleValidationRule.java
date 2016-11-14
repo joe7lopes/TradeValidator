@@ -3,14 +3,15 @@ package com.tradevalidator.validation.rule;
 import com.tradevalidator.domain.Trade;
 import com.tradevalidator.validation.Error;
 import com.tradevalidator.validation.Style;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 import static com.tradevalidator.validation.Error.UNSUPPORTED_STYLE;
 
+@Component
 public class StyleValidationRule implements OptionsValidationRule {
-
 
     @Override
     public Collection<Error> validate(Trade trade) {
@@ -20,7 +21,6 @@ public class StyleValidationRule implements OptionsValidationRule {
         if (!isSupportedStyle(trade)) {
             errors.add(UNSUPPORTED_STYLE);
         }
-
 
         return errors;
     }

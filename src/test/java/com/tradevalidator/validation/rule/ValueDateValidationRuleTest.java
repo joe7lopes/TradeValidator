@@ -1,6 +1,7 @@
 package com.tradevalidator.validation.rule;
 
 import com.tradevalidator.domain.Trade;
+import com.tradevalidator.validation.Error;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -9,8 +10,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.tradevalidator.validation.Error.VALUE_DATE_BEFORE_TRADE_DATE;
-import static com.tradevalidator.validation.Error.VALUE_DATE_FALLS_ON_WEEKEND_OR_NON_WORKING_DAY_FOR_CURRENCY;
+import static com.tradevalidator.validation.Error.*;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
@@ -30,48 +30,52 @@ public class ValueDateValidationRuleTest {
     @Test
     public void givenNullValueDateThenError() {
         trade.setValueDate(null);
-        assertThat(rule.validate(trade), hasItem(VALUE_DATE_BEFORE_TRADE_DATE));
+        assertError(VALUE_DATE_CANNOT_BE_BEFORE_TRADE_DATE);
     }
 
     @Test
     public void givenNullTradeDateThenError() {
         trade.setTradeDate(null);
-        assertThat(rule.validate(trade), hasItem(VALUE_DATE_BEFORE_TRADE_DATE));
+        assertError(VALUE_DATE_CANNOT_BE_BEFORE_TRADE_DATE);
     }
 
     @Test
     public void givenNullValueDateAndValidTradeDateThenError() {
         trade.setValueDate(null);
         trade.setTradeDate(new Date());
-        assertThat(rule.validate(trade), hasItem(VALUE_DATE_BEFORE_TRADE_DATE));
+        assertError(VALUE_DATE_CANNOT_BE_BEFORE_TRADE_DATE);
     }
 
     @Test
-    public void shouldBeBeforeTradeDate() {
+    public void shouldBeAfterTradeDate() {
+        trade.setValueDate(convertStringToDate("2016-09-21"));
         trade.setTradeDate(convertStringToDate("2016-09-22"));
-        trade.setValueDate(convertStringToDate("2016-09-23"));
-        assertThat(rule.validate(trade), hasItem(VALUE_DATE_BEFORE_TRADE_DATE));
+        assertError(VALUE_DATE_CANNOT_BE_BEFORE_TRADE_DATE);
     }
 
     @Test
     public void givenWeekendThenError() {
         trade.setValueDate(convertStringToDate("2016-09-24"));
         trade.setCcyPair("EURUSD");
-        assertThat(rule.validate(trade), hasItem(VALUE_DATE_FALLS_ON_WEEKEND_OR_NON_WORKING_DAY_FOR_CURRENCY));
+        assertError(VALUE_DATE_FALLS_ON_WEEKEND);
     }
 
     @Test
     public void givenNonWorkingDateThenError() {
-        trade.setValueDate(convertStringToDate("2016-12-25"));
+        trade.setValueDate(convertStringToDate("2017-12-25"));
         trade.setCcyPair("EURUSD");
-        assertThat(rule.validate(trade), hasItem(VALUE_DATE_FALLS_ON_WEEKEND_OR_NON_WORKING_DAY_FOR_CURRENCY));
+        assertError(VALUE_DATE_FALLS_ON_NON_WORKING_DAY);
     }
 
     @Test
     public void givenValidValueDateThenNoError() {
-        trade.setTradeDate(convertStringToDate("2016-09-23"));
-        trade.setValueDate(convertStringToDate("2016-09-22"));
+        trade.setValueDate(convertStringToDate("2016-09-23"));
+        trade.setTradeDate(convertStringToDate("2016-09-22"));
         assertThat(rule.validate(trade), is(emptyList()));
+    }
+
+    private void assertError(Error error) {
+        assertThat(rule.validate(trade), hasItem(error));
     }
 
     private Date convertStringToDate(String date) {

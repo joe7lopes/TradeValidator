@@ -11,8 +11,7 @@ import java.util.Currency;
 import static com.tradevalidator.validation.Error.INVALID_CURRENCY_PAIR;
 
 @Component
-public class CurrencyValidationRule implements ValidationRule {
-
+public class CurrencyValidationRule implements AllValidationRule {
 
     @Override
     public Collection<Error> validate(Trade trade) {

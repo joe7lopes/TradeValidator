@@ -11,22 +11,26 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
-import static com.tradevalidator.validation.Error.VALUE_DATE_BEFORE_TRADE_DATE;
-import static com.tradevalidator.validation.Error.VALUE_DATE_FALLS_ON_WEEKEND_OR_NON_WORKING_DAY_FOR_CURRENCY;
+import static com.tradevalidator.validation.Error.*;
 
 @Component
-public class ValueDateValidationRule implements ValidationRule {
+public class ValueDateValidationRule implements AllValidationRule {
+
+    private static final String NON_WORKING_DAY = "2017-12-25";
 
     @Override
     public Collection<Error> validate(Trade trade) {
         Collection<Error> errors = new ArrayList<>();
 
         if (!isValidValueDate(trade)) {
-            errors.add(VALUE_DATE_BEFORE_TRADE_DATE);
+            errors.add(VALUE_DATE_CANNOT_BE_BEFORE_TRADE_DATE);
         }
         if (isCurrencyTrade(trade)) {
-            if (isWeekendOrNonWorkingDay(trade)) {
-                errors.add(VALUE_DATE_FALLS_ON_WEEKEND_OR_NON_WORKING_DAY_FOR_CURRENCY);
+            if (isWeekend(trade.getValueDate())) {
+                errors.add(VALUE_DATE_FALLS_ON_WEEKEND);
+            }
+            if (isNonWorkingDay(trade.getValueDate())) {
+                errors.add(VALUE_DATE_FALLS_ON_NON_WORKING_DAY);
             }
         }
         return errors;
@@ -37,17 +41,13 @@ public class ValueDateValidationRule implements ValidationRule {
         return trade.getCcyPair() != null;
     }
 
-    private boolean isWeekendOrNonWorkingDay(Trade trade) {
-        return isWeekend(trade.getValueDate()) || isNonWorkingDay(trade.getValueDate());
-    }
-
     private boolean isNonWorkingDay(Date date) {
         //This implementation depends on Country location or specific days provided.
         //It is unclear in the requirements the definition of non-working days, therefore, lets put christmas.
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date christmas;
         try {
-            christmas = sdf.parse("2016-12-25");
+            christmas = sdf.parse(NON_WORKING_DAY);
         } catch (ParseException e) {
             return false;
         }
@@ -63,6 +63,6 @@ public class ValueDateValidationRule implements ValidationRule {
 
     private boolean isValidValueDate(Trade trade) {
         boolean isDatesSet = trade.getValueDate() != null && trade.getTradeDate() != null;
-        return isDatesSet && trade.getValueDate().before(trade.getTradeDate());
+        return isDatesSet && trade.getValueDate().after(trade.getTradeDate());
     }
 }
